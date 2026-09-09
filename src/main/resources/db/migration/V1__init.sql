@@ -1,0 +1,7 @@
+BEGIN;
+CREATE TABLE articles (
+      id BIGSERIAL PRIMARY KEY,
+      title VARCHAR(255) NOT NULL
+);
+
+COMMIT;
