@@ -1,11 +1,7 @@
 package org.zafu.news.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.time.Instant;
 
-@Getter
-@AllArgsConstructor
-public class ArticleResponse {
-    private Long id;
-    private String title;
+public record ArticleResponse(Long id, String title, String source, String sourceUrl,
+                              String category, String description, Instant publishedAt) {
 }
