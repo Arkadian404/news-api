@@ -21,6 +21,11 @@ import java.util.List;
 @Slf4j
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+    @ExceptionHandler(RssImportInProgressException.class)
+    public ResponseEntity<Object> handleImportInProgress(RssImportInProgressException exception, WebRequest request) {
+        return failure(exception, HttpStatus.CONFLICT, exception.getMessage(), request);
+    }
+
     @ExceptionHandler(IngestionRunNotFoundException.class)
     public ResponseEntity<Object> handleRunNotFound(IngestionRunNotFoundException exception, WebRequest request) {
         return failure(exception, HttpStatus.NOT_FOUND, exception.getMessage(), request);

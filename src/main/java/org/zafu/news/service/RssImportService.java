@@ -10,6 +10,9 @@ import org.zafu.news.parser.RssParser;
 import org.zafu.news.repository.RssArticleWriter;
 import org.zafu.news.exception.RssImportException;
 import org.zafu.news.model.IngestionRun;
+import org.zafu.news.exception.RssImportInProgressException;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Service
@@ -20,8 +23,20 @@ public class RssImportService {
     private final RssArticleNormalizer normalizer;
     private final RssArticleWriter writer;
     private final IngestionRunService history;
+    private final AtomicBoolean importing = new AtomicBoolean();
 
     public RssImportResponse importFeed() {
+        if (!importing.compareAndSet(false, true)) {
+            throw new RssImportInProgressException();
+        }
+        try {
+            return executeImport();
+        } finally {
+            importing.set(false);
+        }
+    }
+
+    private RssImportResponse executeImport() {
         var run = history.start(rssClient.getFeedUrl().toString());
         try {
             processItems(run);

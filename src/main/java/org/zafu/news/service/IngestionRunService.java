@@ -24,6 +24,11 @@ public class IngestionRunService {
     private final EntityManager entityManager;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public int recoverInterruptedRuns() {
+        return repository.markInterruptedRuns(Instant.now());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public IngestionRun start(String feedUrl) {
         var run = new IngestionRun();
         run.setSource("vnexpress");
