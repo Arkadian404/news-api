@@ -21,6 +21,27 @@ import java.util.List;
 @Slf4j
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+    @ExceptionHandler(IngestionRunNotFoundException.class)
+    public ResponseEntity<Object> handleRunNotFound(IngestionRunNotFoundException exception, WebRequest request) {
+        return failure(exception, HttpStatus.NOT_FOUND, exception.getMessage(), request);
+    }
+
+    @ExceptionHandler(RssImportException.class)
+    public ResponseEntity<Object> handleImportFailure(RssImportException exception, WebRequest request) {
+        HttpStatus status = switch (exception.getCause()) {
+            case RssTimeoutException ignored -> HttpStatus.GATEWAY_TIMEOUT;
+            case RssFetchException ignored -> HttpStatus.BAD_GATEWAY;
+            case RssParseException ignored -> HttpStatus.BAD_GATEWAY;
+            default -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
+        return failure(exception, status, exception.getMessage(), request);
+    }
+
+    @ExceptionHandler(RssParseException.class)
+    public ResponseEntity<Object> handleRssParseFailure(RssParseException exception, WebRequest request) {
+        return failure(exception, HttpStatus.BAD_GATEWAY, exception.getMessage(), request);
+    }
+
     @ExceptionHandler(RssTimeoutException.class)
     public ResponseEntity<Object> handleRssTimeout(RssTimeoutException exception, WebRequest request) {
         return failure(exception, HttpStatus.GATEWAY_TIMEOUT, exception.getMessage(), request);
