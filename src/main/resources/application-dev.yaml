@@ -20,3 +20,5 @@ spring:
 app:
   ingestion:
     feed-url: https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss
+    scheduling:
+      enabled: true

@@ -23,3 +23,7 @@ spring:
 app:
   ingestion:
     feed-url: https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss
+    scheduling:
+      enabled: false
+      cron: "0 */30 * * * *"
+      zone: Asia/Ho_Chi_Minh

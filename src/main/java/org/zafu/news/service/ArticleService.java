@@ -30,9 +30,16 @@ public class ArticleService {
                 .orElseThrow(() -> new ArticleNotFoundException(id)));
     }
 
-    public ArticlePageResponse getArticles(int page, int size, String category, LocalDate from, LocalDate to) {
+    public ArticlePageResponse getArticles(int page, int size, String category, LocalDate from, LocalDate to,
+                                           String keyword) {
         Specification<Article> specification = (root, query, builder) -> {
             var predicates = new ArrayList<Predicate>();
+            if (keyword != null && !keyword.isBlank()) {
+                var title = builder.lower(builder.function("public.unaccent", String.class, root.get("title")));
+                var search = builder.lower(builder.function("public.unaccent", String.class,
+                        builder.literal(keyword.strip())));
+                predicates.add(builder.greaterThan(builder.locate(title, search), 0));
+            }
             if (category != null && !category.isBlank()) {
                 predicates.add(builder.equal(root.get("category"), category.trim()));
             }
